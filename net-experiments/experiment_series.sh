@@ -70,6 +70,7 @@ mv iperf_server_output.log $series_dir
 cd $series_dir
 tail -n 4 */iperf_tentry.log > iperf_client_sums
 # tail -n 4 */iperf_server_output.log > iperf_server_sums
+tail -n 4 */udp_aggregates.tsv > udp_aggregates_all
 
 # This calculates the number of record lines (rls) that happen during the warmup time
 # i.e. that we have to skip. rls are lines that contain valuable records, i.e. lines that are
