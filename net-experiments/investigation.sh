@@ -61,9 +61,16 @@ source ./experiment_series.sh
 
 
 
-
+# Move all the series dirs into the investigation dir
 mkdir $investigation_prefix
 mv ${investigation_prefix}:series*  $investigation_prefix
+
+# Remove the prefix from the series directory names 
+# and do __ --> _ substitution
+cd $investigation_prefix
+rename -E "s/${investigation_prefix}://" -E "s/__/_/g"   ${investigation_prefix}:*
+cd ..
+
 cp "$(readlink -f $0)" $investigation_prefix # archive this script too, as reference
 
 echo -e "\e[42;1mInvestigation $investigation_prefix finished \e[0m"
