@@ -57,7 +57,7 @@ grep -v "^\[SUM\]" iperf_tentry.log | grep -e " 0\.0000-[1-9][0-9]" | grep -e "m
 # grep --fixed-strings "tc -netns" ../ip_netns/setup_namespaces_and_network.sh > $results_dir/network_conf
 # rm afmt_tun0_trace.pcap
 # rm *.tsv
-mv *.tsv all_subtuns_time_inflight_cwnd.pdf  SRTTs.pdf  tentry_logs iperf_totals  iperf_tentry.log  udp_aggregates.tsv  $results_dir
+mv *.tsv all_subtuns_time_inflight_cwnd.pdf  SRTTs.pdf  tentry_logs iperf_totals  iperf_tentry.log   $results_dir
 
 # Compress the longer log/data files still viewable with vim
 gzip $results_dir/*_logs
