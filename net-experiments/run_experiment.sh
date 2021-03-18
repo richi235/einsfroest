@@ -46,18 +46,23 @@ mv /tmp/texit_logs $results_dir
 
 gnuplot all_subtuns_time_inflight_cwnd.plt # tunnel internal infos
 gnuplot   SRTT_boxplot.plt
+
+# Extract totals from iperf_tentry.log:
+grep -v "^\[SUM\]" iperf_tentry.log | grep -e " 0\.0000-[1-9][0-9]" | grep -e "ms .* ms" -e "out-of-order" > iperf_totals
+./iperf_udp_report_aggregate.pl iperf_tentry.log > udp_aggregates.tsv
+
+
 #gnuplot packet_delay_variation_plot.plt
 # gnuplot throughput2.plt 
 # grep --fixed-strings "tc -netns" ../ip_netns/setup_namespaces_and_network.sh > $results_dir/network_conf
 # rm afmt_tun0_trace.pcap
 # rm *.tsv
-mv *.tsv all_subtuns_time_inflight_cwnd.pdf  SRTTs.pdf  tentry_logs iperf_tentry.log $results_dir
+mv *.tsv all_subtuns_time_inflight_cwnd.pdf  SRTTs.pdf  tentry_logs iperf_totals  iperf_tentry.log  udp_aggregates.tsv  $results_dir
 
 # Compress the longer log/data files still viewable with vim
 gzip $results_dir/*_logs
-gzip $results_dir/*.tsv
+gzip $results_dir/*time_inflight_cwnd*.tsv
 # delay_variations afmt_pdv.pdf Throughput.pdf 
-
 
 #exit
 
