@@ -46,20 +46,38 @@ ig1_rate=8mbit
 ig2_rtt=70
 ig2_rate=16mbit
 
-run=r1
-source ./experiment_series.sh
-run=r2
-source ./experiment_series.sh
-run=r3
-source ./experiment_series.sh
-run=r4
-source ./experiment_series.sh
+run_series()
+{
+    flowcount=3
+    bandwith_opt= #"-b3m"  # default is 1 Mbit/s , no spaces allowed
+    run=r1
+    source ./experiment_series.sh
 
-run=r1
-flowcount=7
-source ./experiment_series.sh
+    run=r2
+    source ./experiment_series.sh
 
+    run=r2.2
+    flowcount=5
+    source ./experiment_series.sh
 
+    run=r2.4
+    flowcount=6
+    source ./experiment_series.sh
+
+    run=r3
+    flowcount=7
+    source ./experiment_series.sh
+
+    run=r4
+    flowcount=7
+    bandwith_opt="-b2m"
+    source ./experiment_series.sh
+
+    run=r5
+    flowcount=7
+    bandwith_opt="-b3m"
+    source ./experiment_series.sh
+}
 
 # Move all the series dirs into the investigation dir
 mkdir $investigation_prefix
