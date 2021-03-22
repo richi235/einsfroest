@@ -41,13 +41,13 @@ sched_algo=llfmt_noqueue_busy_wait
 echo -en "\e[32;1m[1/6]  \e[0m"
 source ./run_experiment.sh 
 
-sched_algo=afmt_noqueue_busy_wait
-echo -en "\e[32;1m[2/6]  \e[0m"
-source ./run_experiment.sh
+# sched_algo=afmt_noqueue_busy_wait
+# echo -en "\e[32;1m[2/6]  \e[0m"
+# source ./run_experiment.sh
 
-sched_algo=afmt_noqueue_drop
-echo -en "\e[32;1m[3/6]  \e[0m"
-source ./run_experiment.sh
+# sched_algo=afmt_noqueue_drop
+# echo -en "\e[32;1m[3/6]  \e[0m"
+# source ./run_experiment.sh
 
 sched_algo=afmt_fl
 echo -en "\e[32;1m[4/6]  \e[0m"
