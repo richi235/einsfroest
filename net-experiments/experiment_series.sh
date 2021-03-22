@@ -167,7 +167,7 @@ echo "rls_to_ignore: $rls_to_ignore"
 # PLOT
 
 # also create the fancy publication diagrams
-gnuplot ../throughput_publication.plt  ../SRTTs_boxplot_publication.plt
+gnuplot ../throughput_publication.plt # ../SRTTs_boxplot_publication.plt
 
 # create udp diagrams
 gnuplot ../udp_Jitter.plt ../udp_OWD_avg.plt  ../udp_reordered_packets.plt  ../udp_Throughput_sum.plt
