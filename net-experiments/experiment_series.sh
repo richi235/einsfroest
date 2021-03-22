@@ -30,7 +30,8 @@ echo "Done!"
 echo $CCID > /proc/sys/net/dccp/default/rx_ccid ; echo $CCID > /proc/sys/net/dccp/default/tx_ccid
 
 
-series_dir="${investigation_prefix}:series_${runtime}s_${udp_flag}_${bandwith_opt}_${flowcount}flows_${run}_${hdr_opt}_2subtun__ig1:${ig1_rtt}ms,${ig1_rate}__ig2:${ig2_rtt}ms,${ig2_rate}_$CCID"
+series_name="${runtime}s_${udp_flag}_${run}_${bandwith_opt}_${flowcount}flows_${hdr_opt}_2subtun__ig1:${ig1_rtt}ms,${ig1_rate}__ig2:${ig2_rtt}ms,${ig2_rate}_$CCID"
+series_dir="${investigation_prefix}:series_${series_name}"
 
 mkdir $series_dir
 
@@ -168,6 +169,12 @@ echo "rls_to_ignore: $rls_to_ignore"
 # also create the fancy publication diagrams
 gnuplot ../throughput_publication.plt  ../SRTTs_boxplot_publication.plt
 
+# create udp diagrams
+gnuplot ../udp_Jitter.plt ../udp_OWD_avg.plt  ../udp_reordered_packets.plt  ../udp_Throughput_sum.plt
+mv Jitter.pdf                  Jitter_${series_name}.pdf
+mv owd_avg.pdf                 owd_avg_${series_name}.pdf
+mv reordered_packet_count.pdf  reordered_packet_count_${series_name}.pdf
+mv udp_throughput_sum.pdf      udp_throughput_sum_${series_name}.pdf
 
 # Write a file with our path config
 echo "ig0:" 		   		> path_config
