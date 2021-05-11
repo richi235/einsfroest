@@ -47,7 +47,7 @@ mv /tmp/texit_logs $results_dir
 gnuplot all_subtuns_time_inflight_cwnd.plt # tunnel internal infos
 
 # Extract totals from iperf_tentry.log:
-grep -v "^\[SUM\]" iperf_tentry.log | grep -e " 0\.0000-[1-9][0-9]" | grep -e "ms .* ms" -e "out-of-order" > iperf_totals
+# grep -v "^\[SUM\]" iperf_tentry.log | grep -e " 0\.0000-[1-9][0-9]" | grep -e "ms .* ms" -e "out-of-order" > iperf_totals
 ./iperf_udp_report_aggregate.pl iperf_tentry.log > udp_aggregates.tsv
 
 

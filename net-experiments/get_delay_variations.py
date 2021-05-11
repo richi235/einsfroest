@@ -47,3 +47,8 @@ for seq, arrival_time in enumerate(seq_to_arrival_time):
 # ----------------------------
 #  Sequenz number |
 #   (Index)
+
+
+# tsv output goal:
+# seq#      delay_difference_to_prev_packet (in ms)
+
