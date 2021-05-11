@@ -60,11 +60,23 @@ while(<>)
 
 		my @fields = split();
 		
-		my $delay_string = $fields[13];
-		my $jitter = $fields[8];
+		my $jitter     = $fields[8];
 		my $throughput = $fields[6];
+		
+		# The stats line can have 18 or 19 fields depending on how many packets were in this flow. 
+		# the lost packet count can be 17/ 2675 or 17/50000 . In the later case with no space
+		# it becomes one field. Therefore also the position of the delay string (after the packet count) changes
+		# and we have to take this into account.
+		my $delay_string = "";
+		if ( @fields == 18 ) {
+			$delay_string = $fields[12];
+		} elsif ( @fields == 19 ) {
+			$delay_string = $fields[13];
+		} else {
+			die("Error: Number of fields in traffic summary string is broken");
+		}
 
-		my @delays = split('/', $delay_string);
+		my @delays  = split('/', $delay_string);
 		my $avg_owd = $delays[0];
 		# say("$throughput    $jitter   $avg_owd");
 		
