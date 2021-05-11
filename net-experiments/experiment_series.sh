@@ -35,7 +35,7 @@ series_dir="${investigation_prefix}:series_${series_name}"
 
 mkdir $series_dir
 
-$probe_cmd $udp_flag -s -i 0.1  > iperf_server_output.log  &
+$probe_cmd $udp_flag -s -i 0.1  &> iperf_server_output.log  &
 
 sched_algo=llfmt_noqueue_busy_wait  
 echo -en "\e[32;1m[1/6]  \e[0m"
