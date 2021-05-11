@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Usage: einsfroest_tuncount 2|3
+
+
+if (($1 == 2)); then
+	rm /etc/multivpn.cfg
+	ln -s multivpn_2tun.cfg /etc/multivpn.cfg
+elif (($1 == 3)); then
+	rm /etc/multivpn.cfg
+	ln -s multivpn_3tun.cfg /etc/multivpn.cfg
+else
+	echo "Invalid argument"
+	echo "Usage: einsfroest 2|3"
+	exit -1
+fi
+	echo "Done"

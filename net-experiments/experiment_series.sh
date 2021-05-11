@@ -24,10 +24,14 @@ ssh root@ig2 "tc qdisc change dev eth0.13 root netem delay $((ig2_rtt/2))ms rate
 ssh root@ig2 "tc qdisc change dev eth0.23 root netem delay $((ig2_rtt/2))ms rate $ig2_rate"
 
 ssh root@tentry " cd /proc/sys/net/dccp/default ; echo $CCID > rx_ccid ; echo $CCID > tx_ccid"
+echo $CCID > /proc/sys/net/dccp/default/rx_ccid ; echo $CCID > /proc/sys/net/dccp/default/tx_ccid
 
 echo "Done!"
 
-echo $CCID > /proc/sys/net/dccp/default/rx_ccid ; echo $CCID > /proc/sys/net/dccp/default/tx_ccid
+echo "Setting tunnel count"
+ssh root@tentry "einsfroest_tuncount $tuncount"
+einsfroest_tuncount $tuncount
+echo "Done!"
 
 
 series_name="${runtime}s_${udp_flag}_${run}_${bandwith_opt}_${flowcount}flows_${hdr_opt}_2subtun__ig1:${ig1_rtt}ms,${ig1_rate}__ig2:${ig2_rtt}ms,${ig2_rate}_$CCID"
