@@ -170,15 +170,21 @@ echo "rls_to_ignore: $rls_to_ignore"
 # , '<grep -v -e "^\[SUM\]" -e "0\.0000-[1-9][0-9]"  llfmt_noqueue_busy_wait/iperf_tentry.log |  grep -P -o "( \d+\.\d+)(?= Mbits/sec )"' skip $rls_to_ignore using (5.5):(column(1)) title 'llfmt\_noqueue\_busy\_wait'
 # PLOT
 
-# also create the fancy publication diagrams
-gnuplot ../throughput_publication.plt # ../SRTTs_boxplot_publication.plt
 
-# create udp diagrams
-gnuplot ../udp_Jitter.plt ../udp_OWD_avg.plt  ../udp_reordered_packets.plt  ../udp_Throughput_sum.plt
-mv Jitter.pdf                  Jitter_${series_name}.pdf
-mv owd_avg.pdf                 owd_avg_${series_name}.pdf
-mv reordered_packet_count.pdf  reordered_packet_count_${series_name}.pdf
-mv udp_throughput_sum.pdf      udp_throughput_sum_${series_name}.pdf
+
+if [[ "$udp_flag" == "-u" ]]; then
+    # create udp diagrams
+    gnuplot ../udp_Jitter.plt ../udp_OWD_avg.plt  ../udp_reordered_packets.plt  ../udp_Throughput_sum.plt
+    mv Jitter.pdf                  Jitter_${series_name}.pdf
+    mv owd_avg.pdf                 owd_avg_${series_name}.pdf
+    mv reordered_packet_count.pdf  reordered_packet_count_${series_name}.pdf
+    mv udp_throughput_sum.pdf      udp_throughput_sum_${series_name}.pdf
+else
+    # create TCP diagrams
+    gnuplot ../throughput_LLMT_pub.plt  ../SRTTs_LLMT_pub.plt ../throughput_sums.plt
+    mv Throughputs_LLMT_pub.pdf Throughput_LLMT_pub_${series_name}.pdf
+    mv SRTTs_LLMT_pub.pdf       SRTTs_LLMT_pub_${series_name}.pdf
+fi
 
 # Write a file with our path config
 echo "ig0:" 		   		> path_config
