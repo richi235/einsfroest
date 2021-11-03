@@ -10,7 +10,7 @@ probe_cmd=iperf
 iperf_report_interval=1
 
 
-echo "Setting path characteristics on all subtunnel paths..."
+echo "Setting path characteristics and dccp send buffer size on all subtunnel paths..."
 # ig0
 ssh root@ig0 "tc qdisc change dev eth0.11 root netem delay $((ig0_rtt/2))ms rate $ig0_rate"
 ssh root@ig0 "tc qdisc change dev eth0.21 root netem delay $((ig0_rtt/2))ms rate $ig0_rate"
@@ -24,7 +24,10 @@ ssh root@ig2 "tc qdisc change dev eth0.13 root netem delay $((ig2_rtt/2))ms rate
 ssh root@ig2 "tc qdisc change dev eth0.23 root netem delay $((ig2_rtt/2))ms rate $ig2_rate"
 
 ssh root@tentry " cd /proc/sys/net/dccp/default ; echo $CCID > rx_ccid ; echo $CCID > tx_ccid"
+ssh root@tentry "echo  $send_buffer_size  >  /proc/sys/net/dccp/default/tx_qlen"
+
 echo $CCID > /proc/sys/net/dccp/default/rx_ccid ; echo $CCID > /proc/sys/net/dccp/default/tx_ccid
+echo  $send_buffer_size  >  /proc/sys/net/dccp/default/tx_qlen
 
 echo "Done!"
 
@@ -34,16 +37,19 @@ einsfroest_tuncount $tuncount
 echo "Done!"
 
 
-series_name="${runtime}s_${udp_flag}_${run}_${bandwith_opt}_${flowcount}flows_${hdr_opt}_2subtun__ig1:${ig1_rtt}ms,${ig1_rate}__ig2:${ig2_rtt}ms,${ig2_rate}_$CCID"
-series_dir="${investigation_prefix}:series_${series_name}"
+series_name="${runtime}s_${udp_flag}_${run}_${bandwith_opt}_${flowcount}f_${hdr_opt}_${tuncount}t_${send_buffer_size}sbuff_ig1:${ig1_rtt}ms,${ig1_rate}__ig2:${ig2_rtt}ms,${ig2_rate}_$CCID"
+series_dir="${investigation_prefix}:${series_name}"
 
 mkdir $series_dir
 
-$probe_cmd $udp_flag -s -i 0.1  &> iperf_server_output.log  &
+$probe_cmd $udp_flag $len_opt -s -i 0.1  &> iperf_server_output.log  &
 
 sched_algo=llfmt_noqueue_busy_wait  
 echo -en "\e[32;1m[1/6]  \e[0m"
 source ./run_experiment.sh 
+
+echo -en "\e[32;1m[2/6]  \e[0m"
+source ./run_mptcp_experiment.sh
 
 # sched_algo=afmt_noqueue_busy_wait
 # echo -en "\e[32;1m[2/6]  \e[0m"
@@ -57,7 +63,7 @@ sched_algo=afmt_fl
 echo -en "\e[32;1m[4/6]  \e[0m"
 source ./run_experiment.sh
 
-hdr_opt= #"-hdr"
+# hdr_opt= #"-hdr"
 sched_algo=otias_sock_drop
 echo -en "\e[32;1m[5/6]  \e[0m"
 source ./run_experiment.sh
@@ -171,7 +177,7 @@ echo "rls_to_ignore: $rls_to_ignore"
 # PLOT
 
 
-
+# Generate diagrams and give them good names
 if [[ "$udp_flag" == "-u" ]]; then
     # create udp diagrams
     gnuplot ../udp_Jitter.plt ../udp_OWD_avg.plt  ../udp_reordered_packets.plt  ../udp_Throughput_sum.plt
@@ -184,6 +190,7 @@ else
     gnuplot ../throughput_LLMT_pub.plt  ../SRTTs_LLMT_pub.plt ../throughput_sums.plt
     mv Throughputs_LLMT_pub.pdf Throughput_LLMT_pub_${series_name}.pdf
     mv SRTTs_LLMT_pub.pdf       SRTTs_LLMT_pub_${series_name}.pdf
+    mv throughput_sums.pdf      throughput_sums${series_name}.pdf
 fi
 
 # Write a file with our path config

@@ -26,62 +26,40 @@
 # TODO [B] überlegen wie man subtunnel anzahl ändern kann
 #    - evtl. eigenes script auf tentry das mpvpn config ändert (3. subtunnel toggled), dann hier callen
 
-investigation_prefix=all_asym_5flows_repeat
+investigation_prefix=cpdv_udp_1_flow_20M_3
 
-runtime=70
+# If the investigation dir already exists, append a _
+if [[ -e $investigation_prefix ]] ; then 
+	investigation_prefix=${investigation_prefix}_
+fi	
+
+
+runtime=60
 warmup_seconds=10
-flowcount=5
+flowcount=1
 # run=r6_newtimeinlog
-udp_flag= #"-u"
-bandwith_opt= #"-b3m"
+udp_flag="-u"
+len_opt="-l 1390"
+bandwith_opt="-b20m"
 hdr_opt= #"-hdr"
 CCID=2
+send_buffer_size=5 # in packets
+tuncount=3
 
 ig0_rtt=50    # in ms
 ig0_rate=8mbit
 
-ig1_rtt=50
+ig1_rtt=70
 ig1_rate=8mbit
 
-ig2_rtt=70
-ig2_rate=16mbit
+ig2_rtt=50
+ig2_rate=8mbit
 
-run_series()
-{
-    flowcount=3
-    bandwith_opt= #"-b3m"  # default is 1 Mbit/s , no spaces allowed
-    run=r1
-    source ./experiment_series.sh
+source ./experiment_series.sh
 
-    run=r2
-    source ./experiment_series.sh
 
-    run=r2.2
-    flowcount=5
-    source ./experiment_series.sh
-
-    run=r2.4
-    flowcount=6
-    source ./experiment_series.sh
-
-    run=r3
-    flowcount=7
-    source ./experiment_series.sh
-
-    run=r4
-    flowcount=7
-    bandwith_opt="-b2m"
-    source ./experiment_series.sh
-
-    run=r5
-    flowcount=7
-    bandwith_opt="-b3m"
-    source ./experiment_series.sh
-}
-
-# Move all the series dirs into the investigation dir
 mkdir $investigation_prefix
-mv ${investigation_prefix}:series*  $investigation_prefix
+mv ${investigation_prefix}:*  $investigation_prefix
 
 # Remove the prefix from the series directory names 
 # and do __ --> _ substitution

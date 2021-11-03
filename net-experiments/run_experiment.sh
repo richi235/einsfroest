@@ -15,7 +15,7 @@ timeout $((runtime+18)) ../minimal_experiment_prototype.pl  \
               --sched=$sched_algo $hdr_opt --ccid=$CCID &> /tmp/texit_logs  &
 sleep 1
 
-#timeout $((runtime+5)) tcpdump -i tun0 -w afmt_tun0_trace.pcap "dst 192.168.65.2" &
+timeout $((runtime+5)) tcpdump -i tun1 -w tun1_trace.pcap "dst 192.168.65.2" &
 # timeout $((runtime+5)) tcpdump -i veth12 -w afmt_veth12.pcap "proto dccp" &
 #$probe_cmd $udp_flag  -s -i 0.1 --reportstyle C > iperf_server_output.csv &
 
@@ -23,7 +23,7 @@ $other_ctx_prefix "timeout $((runtime+16)) ~/Coding/Reinhard-VPN/minimal_experim
              --sched=$sched_algo --ccid=$CCID \
             --lcon=INFO  --lalgo=NOTICE  $hdr_opt --lsci=NOTICE  &> /tmp/tentry_logs" &
 sleep 3
-$other_ctx_prefix "$probe_cmd $udp_flag  -t $runtime $bandwith_opt  \
+$other_ctx_prefix "$probe_cmd $udp_flag $len_opt -t $runtime $bandwith_opt  \
 		            -c 192.168.65.2 -i $iperf_report_interval -e -f m  -P $flowcount  &> /tmp/iperf_tentry.log" &
 
 sleep $((runtime+17))
@@ -34,29 +34,37 @@ sleep $((runtime+17))
 # mal schuen: wo landet die datei wenn relativer pfad bei ssh remote command
 #  antwort: im homedir, as expected
 
-# if we used ssh copy log files from other host to us:
+# if we used ssh, copy log files from other host to us:
 # uses bash regex matching, checks if prefx starts with "ssh "
 if [[ $other_ctx_prefix =~ ^ssh[[:blank:]]  ]] ; then
     scp -q "$tentry_ssh_dest:/tmp/{*tentry*log*,time_inflight*.tsv}" .
 fi
 
 mv /tmp/texit_logs $results_dir
-#./get_delay_variations.py afmt_tun0_trace.pcap > delay_variations
-./demux_subtun_records.pl time_inflight_cwnd_srtt.tsv
+#./get_delay_variations.py afmt_tun1_trace.pcap > delay_variations
+if [[ "$udp_flag" == "-u" ]] ; then
+	cpdv_tsv.py udp tun1_trace.pcap
+else
+	cpdv_tsv.py tcp tun1_trace.pcap	
+fi
 
+cpdv_diagram.py points cpdv_flow*.tsv
+rm tun1_trace.pcap
+./demux_subtun_records.pl time_inflight_cwnd_srtt.tsv
 gnuplot all_subtuns_time_inflight_cwnd.plt # tunnel internal infos
 
-# Extract totals from iperf_tentry.log:
-# grep -v "^\[SUM\]" iperf_tentry.log | grep -e " 0\.0000-[1-9][0-9]" | grep -e "ms .* ms" -e "out-of-order" > iperf_totals
-./iperf_udp_report_aggregate.pl iperf_tentry.log > udp_aggregates.tsv
-
+if [[ "$udp_flag" == "-u" ]] ; then
+	# If UDP: Extract totals from iperf_tentry.log:
+	# grep -v "^\[SUM\]" iperf_tentry.log | grep -e " 0\.0000-[1-9][0-9]" | grep -e "ms .* ms" -e "out-of-order" > iperf_totals
+	./iperf_udp_report_aggregate.pl iperf_tentry.log > udp_aggregates.tsv
+fi
 
 #gnuplot packet_delay_variation_plot.plt
 # gnuplot throughput2.plt 
 # grep --fixed-strings "tc -netns" ../ip_netns/setup_namespaces_and_network.sh > $results_dir/network_conf
-# rm afmt_tun0_trace.pcap
+# rm afmt_tun1_trace.pcap
 # rm *.tsv
-mv *.tsv all_subtuns_time_inflight_cwnd.pdf   tentry_logs iperf_totals  iperf_tentry.log   $results_dir
+mv *.tsv   cpdv_flow*.pdf  all_subtuns_time_inflight_cwnd.pdf   tentry_logs iperf_totals  iperf_tentry.log   $results_dir
 
 # Compress the longer log/data files still viewable with vim
 gzip $results_dir/*_logs
