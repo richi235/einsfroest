@@ -1,7 +1,9 @@
-# Reinhard-VPN
+# Einsfroest
 
 A Multipath Tunneling VPN Client and Server.   
 Like OpenVPN, but with multiple links from Client to Server.
+
+Note: This is a research prototype to evaluate different multipath packet scheduling algorithms.
 
 ## Properties 
 
@@ -38,12 +40,3 @@ cp serverStaticIP.example.cfg /etc/multivpn.cfg
 ```
 Edit the config conforming to your network setup.
 
-## About the fork
-This is a fork of multipath-vpn. Main differences include:
-  * Improved throughput performance (about 23% higher throughput for a given CPU, see [Reinhard-VPN/Benchmarks/performance-bench-kvm-test-network/](Reinhard-VPN/Benchmarks/performance-bench-kvm-test-network/
-) for benchmarks.)
-  * Reduction and better control of Packet Reordering
-  * Improved Code Quality and Documentation coverage
-
-## Naming
-This Software is named after *Reinhard von Lohengram* from Ginga Eiyuu Densetsu.
